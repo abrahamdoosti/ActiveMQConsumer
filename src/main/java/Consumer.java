@@ -35,8 +35,22 @@ public class Consumer {
 			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 			destination = session.createQueue("JCG_QUEUE");
 			consumer = session.createConsumer(destination);
-
-			consumer.setMessageListener(new HelloMessageListener());
+            
+			//setMessageListener can take a MessageListener implementing class or lambda expression of the Functional Interface method
+			consumer.setMessageListener((Message msg)->{
+				TextMessage textMessage = (TextMessage) msg;
+				try {
+					System.out.println("Listening...");
+					System.out.println(
+							"Consumer " + Thread.currentThread().getName() + " received message: " + textMessage.getText());
+					if (msg instanceof TextMessage) {
+						TextMessage tm = (TextMessage) msg;
+						System.out.println(tm.getText());
+					}
+				} catch (JMSException e) {
+					e.printStackTrace();
+				}
+			});
 			
 		} catch (JMSException e) {
 			e.printStackTrace();
